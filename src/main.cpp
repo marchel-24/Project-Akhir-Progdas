@@ -45,14 +45,18 @@ int main()
     std::vector<std::shared_ptr<Rental>> rentals;
 
     // default data file paths
-    const std::string vehiclesFile = "data/input.txt";
-    const std::string customersFile = "data/customers.txt";
+    const std::string vehiclesInputFile = "data/input.txt";
+    const std::string customersInputFile = "data/customers.txt";
+
+    const std::string vehiclesOutputFile = "data/output.txt";            // hasil simpan
+    const std::string customersOutputFile = "data/customers_output.txt"; // hasil simpan customers
 
     // try load initial data
-    auto loaded = FileManager::loadVehicles(vehiclesFile);
+    // try load initial data (always from input files)
+    auto loaded = FileManager::loadVehicles(vehiclesInputFile);
     for (auto &v : loaded)
         fleet.addVehicle(v);
-    customers = FileManager::loadCustomers(customersFile);
+    customers = FileManager::loadCustomers(customersInputFile);
 
     bool running = true;
     while (running)
@@ -253,25 +257,28 @@ int main()
         {
             // gather vehicles
             auto all = fleet.listAll();
-            if (FileManager::saveVehicles(vehiclesFile, all))
-                std::cout << "Kendaraan disimpan ke " << vehiclesFile << "\n";
+            // save to output files (do not overwrite input.txt)
+            if (FileManager::saveVehicles(vehiclesOutputFile, all))
+                std::cout << "Kendaraan disimpan ke " << vehiclesOutputFile << "\n";
             else
-                std::cout << "Gagal menyimpan kendaraan.\n";
-            if (FileManager::saveCustomers(customersFile, customers))
-                std::cout << "Customers disimpan ke " << customersFile << "\n";
+                std::cout << "Gagal menyimpan kendaraan ke " << vehiclesOutputFile << "\n";
+
+            if (FileManager::saveCustomers(customersOutputFile, customers))
+                std::cout << "Customers disimpan ke " << customersOutputFile << "\n";
             else
-                std::cout << "Gagal menyimpan customers.\n";
+                std::cout << "Gagal menyimpan customers ke " << customersOutputFile << "\n";
+
             pause();
         }
         else if (choice == 11)
         {
             fleet = Fleet();
             customers.clear();
-            auto l = FileManager::loadVehicles(vehiclesFile);
+            auto l = FileManager::loadVehicles(vehiclesInputFile); // load from input (fresh copy)
             for (auto &v : l)
                 fleet.addVehicle(v);
-            customers = FileManager::loadCustomers(customersFile);
-            std::cout << "Data dimuat ulang dari file.\n";
+            customers = FileManager::loadCustomers(customersInputFile);
+            std::cout << "Data dimuat ulang dari file input (" << vehiclesInputFile << " / " << customersInputFile << ").\n";
             pause();
         }
         else if (choice == 0)

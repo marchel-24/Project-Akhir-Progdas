@@ -1,0 +1,2 @@
+1,Toyota,Avanza,2018,280000.00,1
+2,Toyota,Innova,2020,500000.00,1
